@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Post from './Post/post';
 import css from './posts.module.css';
 import axios from "./../axios";
+import PostSkelton from "../Ui/PostSkelton/postSkelton";
 import {getAuthorName} from '../Helper/helper';
 
 const Posts = props => {
@@ -11,6 +12,7 @@ const Posts = props => {
     const [posts, setPosts] = useState([]);
     const [comments, setComments] = useState([]);
     const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         axios.get('/posts')
@@ -21,6 +23,8 @@ const Posts = props => {
         axios.get('/comments')
             .then(response => {
                 setComments(response.data);
+
+                setLoading(false);
             });
 
         const query = new URLSearchParams(props.location.search);
@@ -73,10 +77,18 @@ const Posts = props => {
 
     return (
         <div style={{margin: '20px 5%'}}>
-            <div className={css.posts}>
-                {allPosts}
-            </div>
-            {pageLinks(+page)}
+
+            {loading ?
+                <PostSkelton />
+            :
+                <div>
+                    <div className={css.posts}>
+                        {allPosts}
+                    </div>
+                    {pageLinks(+page)}
+                </div>
+            }
+
         </div>
     );
 }
