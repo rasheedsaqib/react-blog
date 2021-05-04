@@ -1,0 +1,25 @@
+.comment{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.commentImg{
+    width: 150px;
+    height: 150px;
+    border-radius: 200px;
+    margin-right: 30px;
+}
+
+.commentBody{
+    color: #a7a7a7;
+    font-size: 16px;
+}
+
+.commentReply{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 20px;
+}

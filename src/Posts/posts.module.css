@@ -1,0 +1,11 @@
+.posts{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.links{
+    margin-right: 10px;
+    color: #ff1b96;
+    font-size: 18px;
+    font-weight: bold;
+}
