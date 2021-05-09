@@ -1,53 +1,26 @@
 import {useState, useEffect} from "react";
 import { Link } from 'react-router-dom';
+import { connect } from "react-redux";
 
 import css from './fullPost.module.css';
-import axios from "./../axios";
 import Comments from "./Comments/comments";
 import PostComment from "./PostComment/postComment";
-import { getRandomImage, capitalize, getAuthorName } from "../Helper/helper";
+import { getRandomImage, capitalize } from "../Helper/helper";
 import FullPostSkelton from '../Ui/FullPostSkelton/fullPostSkelton';
+import * as actions from '../Store/Actions/index';
 
 const FullPost = props => {
 
-    const [post, setPost] = useState({
-        userId: 1,
-        id: 1,
-        title: "",
-        body: ""
-    });
-
-    const [comments, setComments] = useState([]);
-
-    const [loading, setLoading] = useState(true);
-
     useEffect(()=>{
-        axios.get('/posts/' + props.match.params.id)
-            .then(response => {
-                setPost(response.data);
-
-                axios.get('/posts/' + props.match.params.id + '/comments')
-                    .then(response => {
-                        setComments(response.data);
-
-                        setLoading(false);
-
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        props.onFetchPost(props.match.params.id);
+        props.onFetchComments(props.match.params.id);
 
     }, [props.match.params.id]);
 
     return (
         <div className={css.fullPost}>
 
-            {loading ?
+            {props.loading ?
                 <FullPostSkelton />
             :
                 <div>
@@ -56,27 +29,27 @@ const FullPost = props => {
                     <div className={css.flex}>
                         <div className={css.author}>
                             <img className={css.authorImg} src="https://www.flaticon.com/premium-icon/icons/svg/3106/3106921.svg" alt='Author' />
-                            <p>{getAuthorName(post.userId)}</p>
+                            <p>Saqib Rasheed</p>
                         </div>
                         <div className={css.author}>
                             <img className={css.authorImg} src="https://www.vhv.rs/dpng/d/491-4915568_conversation-bubble-comments-comment-icon-png-transparent-png.png" alt='Comments' />
-                            <p>{comments.length} Comments</p>
+                            <p>{props.comments.length} Comments</p>
                         </div>
                     </div>
 
-                    <h1 style={{margin: '0', color: '#ff1b96', fontWeight: '900'}}>{capitalize(post.title)}</h1>
+                    <h1 style={{margin: '0', color: '#ff1b96', fontWeight: '900'}}>{capitalize(props.post.title)}</h1>
 
-                    <p className={css.p}> {post.body}. {post.body}. </p>
-                    <p className={css.p}> {post.body}. {post.body} </p>
-                    <p className={css.p}> {post.body} </p>
+                    <p className={css.p}> {props.post.body}. {props.post.body}. </p>
+                    <p className={css.p}> {props.post.body}. {props.post.body} </p>
+                    <p className={css.p}> {props.post.body} </p>
 
                     <p className={css.quote}>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
                         Ipsum has been the industry's standard dummy text ever since the 1500s, wh
                         unknown printer took a galley of type and scrambled
                         <br />-Karon Roy</p>
 
-                    <p className={css.p}> {post.body}. {post.body} </p>
-                    <p className={css.p}> {post.body} </p>
+                    <p className={css.p}> {props.post.body}. {props.post.body} </p>
+                    <p className={css.p}> {props.post.body} </p>
 
                     <div className={css.social}>
                         <h3>Social Share</h3>
@@ -90,7 +63,7 @@ const FullPost = props => {
 
                     <hr style={{borderTop: '1px solid #d0d0d0'}} />
 
-                    <Comments comments={comments} />
+                    <Comments comments={props.comments} />
 
                     <hr style={{borderTop: '1px solid #d0d0d0'}} />
 
@@ -108,4 +81,20 @@ const FullPost = props => {
 
 }
 
-export default FullPost;
+const mapStateToProps = state => {
+    return{
+        post: state.fullPost.post,
+        comments: state.fullPost.comments,
+        loading: state.fullPost.loading,
+        error: state.fullPost.error
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onFetchPost: (id) => dispatch(actions.fetchFullPost(id)),
+        onFetchComments: (id) => dispatch(actions.fetchPostComments(id))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FullPost);
